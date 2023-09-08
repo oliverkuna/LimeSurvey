@@ -698,7 +698,7 @@ if (!isset($argv[0]) && Yii::app() != null) {
     $config['publicurl'] = '/';
 }
 
-$config['assets'] = 'assets/';
+$config['assets'] = $config['publicurl'] . DIRECTORY_SEPARATOR . 'assets';
 
 // URL defintions
 $config['homeurl']                = $config['publicurl'] . 'admin'; // The website location (url) of the admin scripts
@@ -708,12 +708,12 @@ $config['uploadurl']              = $config['publicurl'] . 'upload';
 $config['standardthemerooturl']   = $config['publicurl'] . 'themes/survey'; // Location of the standard themes
 $config['adminscripts']           = $config['publicurl'] . 'assets/scripts/admin/';
 $config['generalscripts']         = $config['publicurl'] . 'assets/scripts/';
-$config['packages']               = $config['assets'] . 'packages/';
+$config['packages']               = $config['assets'] . DIRECTORY_SEPARATOR . 'packages';
 $config['vendor']                 = $config['publicurl'] . 'vendor/';
 $config['styleurl']               = $config['publicurl'] . 'themes/admin/';
-$config['publicstyle']            = $config['publicurl'] . $config['assets'] . 'styles-public/';
+$config['publicstyle']            = $config['assets'] . DIRECTORY_SEPARATOR . 'styles-public/';
 $config['publicstyleurl']         = $config['publicstyle'];
-$config['sCKEditorURL']           = $config['assets'] . 'ckeditor';
+$config['sCKEditorURL']           = $config['assets'] . DIRECTORY_SEPARATOR . 'ckeditor';
 $config['userthemerooturl']       = $config['uploadurl'] . '/themes/survey'; // Location of the user themes
 $config['adminimageurl']          = $config['styleurl'] . $config['admintheme'] . '/images/'; // Location of button bar files for admin script
 $config['applicationurl']         = $config['publicurl'] . 'application/';
