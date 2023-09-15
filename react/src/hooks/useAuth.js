@@ -1,12 +1,15 @@
 import { useQuery, useMutation } from '@tanstack/react-query'
+import { useCookies } from 'react-cookie'
 
 import { queryClient } from 'query'
 
 export const useAuth = () => {
+  const [ cookies ] = useCookies(['LS_AUTH_INIT'])
+
   const { data: auth } = useQuery({
     queryKey: ['auth'],
     queryFn: () => {
-      return { token: null }
+      return { token: null, expires: null }
     },
     staleTime: Infinity,
     cacheTime: Infinity,
@@ -33,9 +36,19 @@ export const useAuth = () => {
     },
   })
 
-  const isLoggedIn = !!auth && !!auth.token
+  const isLoggedIn = process.env.REACT_APP_DEMO_MODE
+    || (!!auth && !!auth.token)
   const isPending =
     loginMutation && (loginMutation.isLoading || loginMutation.isError)
+
+  // If we are not logged-in and not in the process of logging-in
+  // - and there is an auth-init cookie init auth from the cookie
+  if (!isLoggedIn && !isPending && cookies.LS_AUTH_INIT) {
+    setAuth({
+      token: cookies.LS_AUTH_INIT.token,
+      expires: cookies.LS_AUTH_INIT.expires
+    })
+  }
 
   const login = () => {
     if (!isLoggedIn && !isPending) {
@@ -49,7 +62,14 @@ export const useAuth = () => {
     }
   }
 
-  return { isLoggedIn, isPending, login, loginMutation, setAuth }
+  return {
+    isLoggedIn,
+    isPending,
+    login,
+    loginMutation,
+    setAuth,
+    token: auth ? auth.token : null
+  }
 }
 
 export default useAuth

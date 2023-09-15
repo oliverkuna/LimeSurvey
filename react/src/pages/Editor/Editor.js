@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import Container from 'react-bootstrap/Container'
 
+import { AuthGate } from 'components/AuthGate'
 import { Survey } from 'components/Survey'
 import { useAppState, useElementClick, useFocused } from 'hooks'
 
@@ -11,7 +12,7 @@ import { RightSideBar } from './RightSideBar/RightSideBar'
 
 export const Editor = () => {
   const params = useParams()
-  const [surveyId, setSurveyId] = useState(params.id)
+  const [surveyId, setSurveyId] = useState(params.id ? params.id : 282267)
   const [editorSettingsPanelOpen] = useAppState('editorSettingsPanelOpen', true)
 
   const { unFocus } = useFocused()
@@ -30,21 +31,24 @@ export const Editor = () => {
 
   return (
     <React.Fragment>
-      <TopBar surveyId={surveyId} />
-      <Container className="p-0" fluid>
-        <div id="content" className="d-flex">
-          <LeftSideBar surveyId={surveyId} />
-          <div className="main-body">
-            <div className="survey-part">
-              <Survey id={surveyId} />
+      <AuthGate>
+        <TopBar surveyId={surveyId} />
+        <Container className="p-0" fluid>
+          <div id="content" className="d-flex">
+            <LeftSideBar surveyId={surveyId} />
+            <div className="main-body">
+              <div className="survey-part">
+                <Survey id={surveyId} />
+              </div>
+              {!editorSettingsPanelOpen && (
+                <div className="inner-wrap" ref={ref} />
+              )}
             </div>
-            {!editorSettingsPanelOpen && (
-              <div className="inner-wrap" ref={ref} />
-            )}
+            <RightSideBar surveyId={surveyId} />
           </div>
-          <RightSideBar surveyId={surveyId} />
-        </div>
-      </Container>
+        </Container>
+      </AuthGate>
+      <AuthGate authorised={false}>Please Login</AuthGate>
     </React.Fragment>
   )
 }

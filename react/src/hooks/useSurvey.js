@@ -1,19 +1,31 @@
 import { useQuery } from '@tanstack/react-query'
 
 import { queryClient } from 'query'
+import { useAuth } from 'hooks'
 
 export const useSurvey = (id) => {
+  const auth = useAuth()
+
   let { data } = useQuery(
     ['survey', id],
     async () => {
       if (process.env.REACT_APP_DEMO_MODE) {
-        // temporary way to have multiple surveys
-        const link = id
-          ? './data/survey-detail-empty.json'
-          : './data/survey-detail.json'
+        const url = id
+          ? './data/survey-detail.json'
+          : './data/survey-detail-empty.json'
 
-        const res = await fetch(link)
+        const res = await fetch(url)
         return await res.json()
+      } else {
+        const url = 'http://ls-ce/index.php/rest/v1/survey-detail/' + id
+        if (auth && auth.token) {
+          let headers = {
+              mode: 'cors',
+              Authorization: 'Bearer ' + auth.token
+          }
+          const res = await fetch(url, {headers})
+          return await res.json()
+        }
       }
     },
     {
@@ -32,11 +44,6 @@ export const useSurvey = (id) => {
     })
   }
 
-  // const persistCurrentState = async () =>
-  //   fetch('/data/survey.json', {
-  //     method: 'POST',
-  //     body: JSON.stringify(survey),
-  //   })
   const persistCurrentState = () => {
     queryClient.setQueryData(['survey', id], { ...data.survey })
   }
